@@ -30,7 +30,7 @@ function field_readonly_field_attach_form($entity_type, $entity, &$form, &$form_
     $build = $build[$entity_type][$entity_id];
 
     foreach (element_children($form) as $key) {
-      if (substr($key, 0, 6) == 'field_') {
+      if ($key == 'body' || substr($key, 0, 6) == 'field_') {
         $element = $form[$key];
         if (isset($element['#access']) && !$element['#access'] && isset($build[$key])) {
           $new_key = '_field_readonly__'. $key;

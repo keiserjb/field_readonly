@@ -29,18 +29,24 @@ function field_readonly_field_attach_form($entity_type, $entity, &$form, &$form_
     $build = entity_view($entity_type, array($entity), 'field_readonly');
     $build = $build[$entity_type][$entity_id];
 
-    foreach (element_children($form) as $key) {
-      if ($key == 'body' || substr($key, 0, 6) == 'field_') {
-        $element = $form[$key];
-        if (isset($element['#access']) && !$element['#access'] && isset($build[$key])) {
-          $new_key = '_field_readonly__'. $key;
-          $form[$new_key] = array_merge($build[$key], array('#weight' => $element['#weight']));
+    // Iterate on each field instance.
+    list(, , $bundle) = entity_extract_ids($entity_type, $entity);
+    $instances = _field_invoke_get_instances($entity_type, $bundle, array('default' => TRUE, 'deleted' => FALSE, 'language' => NULL));
+    foreach ($instances as $instance) {
+      $field = field_info_field_by_id($instance['field_id']);
+      $field_name = $field['field_name'];
+
+      if (isset($form[$field_name])) {
+        $element = $form[$field_name];
+        if (isset($element['#access']) && !$element['#access'] && isset($build[$field_name])) {
+          $new_field_name = '_field_readonly__'. $field_name;
+          $form[$new_field_name] = array_merge($build[$field_name], array('#weight' => $element['#weight']));
           $attach_css = TRUE;
 
           // Add support for the Field Group module.
-          if (isset($form['#group_children'][$key])) {
-            $form['#group_children'][$new_key] = $form['#group_children'][$key];
-            $form[$new_key]['#type'] = '_dummy_type';
+          if (isset($form['#group_children'][$field_name])) {
+            $form['#group_children'][$new_field_name] = $form['#group_children'][$field_name];
+            $form[$new_field_name]['#type'] = '_dummy_type';
           }
         }
       }

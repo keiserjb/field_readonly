@@ -27,7 +27,8 @@ function field_readonly_field_attach_form($entity_type, $entity, &$form, &$form_
   $entity_id = entity_id($entity_type, $entity);
   if ($entity_id && entity_access('view', $entity_type, $entity)) {
     $build = entity_view($entity_type, array($entity), 'field_readonly');
-    $build = $build[$entity_type][$entity_id];
+    $build = reset($build);
+    $build = $build[$entity_id];
 
     // Iterate on each field instance.
     list(, , $bundle) = entity_extract_ids($entity_type, $entity);

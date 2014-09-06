@@ -24,14 +24,13 @@ function field_readonly_entity_info_alter(&$entity_info) {
  */
 function field_readonly_field_attach_form($entity_type, $entity, &$form, &$form_state, $langcode) {
   // Display non-accessible fields as read-only items.
-  $entity_id = entity_id($entity_type, $entity);
+  list($entity_id, , $bundle) = entity_extract_ids($entity_type, $entity);
   if ($entity_id && entity_access('view', $entity_type, $entity)) {
     $build = entity_view($entity_type, array($entity), 'field_readonly');
     $build = reset($build);
     $build = $build[$entity_id];
 
     // Iterate on each field instance.
-    list(, , $bundle) = entity_extract_ids($entity_type, $entity);
     $instances = _field_invoke_get_instances($entity_type, $bundle, array('default' => TRUE, 'deleted' => FALSE, 'language' => NULL));
     foreach ($instances as $instance) {
       $field = field_info_field_by_id($instance['field_id']);

@@ -25,7 +25,13 @@ function field_readonly_entity_info_alter(&$entity_info) {
 function field_readonly_field_attach_form($entity_type, $entity, &$form, &$form_state, $langcode) {
   // Display non-accessible fields as read-only items.
   $entity_id = entity_id($entity_type, $entity);
-  if ($entity_id && entity_access('view', $entity_type, $entity)) {
+  if ($entity_id && entity_access('view', $entity_type, $entity) || !$entity_id && entity_access('create', $entity_type, $entity)) {
+    if (!$entity_id) {
+      $entity = clone $entity;
+      $info = entity_get_info($entity_type);
+      $key = isset($info['entity keys']['name']) ? $info['entity keys']['name'] : $info['entity keys']['id'];
+      $entity_id = $entity->$key = FALSE;
+    }
     $build = entity_view($entity_type, array($entity), 'field_readonly');
     $build = reset($build);
     $build = $build[$entity_id];
@@ -39,7 +45,7 @@ function field_readonly_field_attach_form($entity_type, $entity, &$form, &$form_
         $element = $form[$field_name];
         if (isset($element['#access']) && !$element['#access'] && isset($build[$field_name])) {
           $new_field_name = '_field_readonly__' . $field_name;
-          $weight = isset($extra_fields[$field_name]) ? $extra_fields[$field_name]['weight'] : $element['#weight'];
+          $weight = isset($extra_fields[$field_name]) && !isset($element['#weight']) ? $extra_fields[$field_name]['weight'] : $element['#weight'];
           $form[$new_field_name] = array_merge($build[$field_name], array('#weight' => $weight));
           $attach_css = TRUE;
 

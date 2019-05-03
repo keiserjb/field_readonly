@@ -25,7 +25,7 @@ function field_readonly_entity_info_alter(&$entity_info) {
 function field_readonly_field_attach_form($entity_type, $entity, &$form, &$form_state, $langcode) {
   // Display non-accessible fields as read-only items.
   $entity_id = entity_id($entity_type, $entity);
-  if ($entity_id && entity_access('view', $entity_type, $entity) || !$entity_id && entity_access('create', $entity_type, $entity)) {
+  if ($entity_id && entity_access('view', $entity_type, $entity) || !$entity_id && entity_access('create', $entity_type, $entity) && field_readonly_view_new_entity_support($entity_type, $entity)) {
     if (!$entity_id) {
       $entity = clone $entity;
       $info = entity_get_info($entity_type);
@@ -33,6 +33,9 @@ function field_readonly_field_attach_form($entity_type, $entity, &$form, &$form_
       $entity_id = $entity->$key = FALSE;
     }
     $build = entity_view($entity_type, array($entity), 'field_readonly');
+    if (!$build) {
+      return;
+    }
     $build = reset($build);
     $build = $build[$entity_id];
 
@@ -62,4 +65,18 @@ function field_readonly_field_attach_form($entity_type, $entity, &$form, &$form_
       $form['#attached']['css'][] = drupal_get_path('module', 'field_readonly') . '/field_readonly.css';
     }
   }
+}
+
+/**
+ * Checks whether a new entity supports being viewed.
+ */
+function field_readonly_view_new_entity_support($entity_type, $entity) {
+  list(, , $bundle) = entity_extract_ids($entity_type, $entity);
+  foreach (module_implements('field_readonly_view_new_entity_support') as $module) {
+    $function = $module . '_field_readonly_view_new_entity_support';
+    if ($function($entity_type, $bundle)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
 }

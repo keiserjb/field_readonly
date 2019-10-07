@@ -25,7 +25,7 @@ function field_readonly_entity_info_alter(&$entity_info) {
 function field_readonly_field_attach_form($entity_type, $entity, &$form, &$form_state, $langcode) {
   // Display non-accessible fields as read-only items.
   $entity_id = entity_id($entity_type, $entity);
-  if ($entity_id && entity_access('view', $entity_type, $entity) || !$entity_id && entity_access('create', $entity_type, $entity) && field_readonly_view_new_entity_support($entity_type, $entity)) {
+  if ($entity_id && entity_access('view', $entity_type, $entity) || !$entity_id && field_readonly_view_new_entity_support($entity_type, $entity) && entity_access('view', $entity_type, $entity)) {
     if (!$entity_id) {
       $entity = clone $entity;
       $info = entity_get_info($entity_type);

@@ -23,6 +23,11 @@ function field_readonly_entity_info_alter(&$entity_info) {
  * Implements hook_field_attach_form().
  */
 function field_readonly_field_attach_form($entity_type, $entity, &$form, &$form_state, $langcode) {
+  // Ignore Ajax requests.
+  if (!empty($form_state['triggering_element']['#ajax']['callback'])) {
+    return;
+  }
+
   // Display non-accessible fields as read-only items.
   $entity_id = entity_id($entity_type, $entity);
   if ($entity_id && entity_access('view', $entity_type, $entity) || !$entity_id && field_readonly_view_new_entity_support($entity_type, $entity) && entity_access('view', $entity_type, $entity)) {

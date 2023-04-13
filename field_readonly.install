@@ -7,7 +7,7 @@
  */
 
 /**
- * Implements hook_install().
+ * Implements hook_install().().
  */
 function field_readonly_install() {
   db_update('system')
@@ -16,12 +16,5 @@ function field_readonly_install() {
     ->execute();
 }
 
-/**
- * Make Field Readonly run after Field Group.
- */
-function field_readonly_update_7001() {
-  db_update('system')
-    ->fields(array('weight' => 2))
-    ->condition('name', 'field_readonly')
-    ->execute();
-}
+// TODO The old hook_update_N functions cannot be applied to Backdrop.
+function field_readonly_update_7001() { }

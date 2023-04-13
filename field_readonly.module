@@ -7,7 +7,7 @@
  */
 
 /**
- * Implements hook_entity_info_alter().
+ * Implements hook_entity_info_alter().().
  */
 function field_readonly_entity_info_alter(&$entity_info) {
   // Add the field_readonly view mode.
@@ -20,7 +20,7 @@ function field_readonly_entity_info_alter(&$entity_info) {
 }
 
 /**
- * Implements hook_field_attach_form().
+ * Implements hook_field_attach_form().().
  */
 function field_readonly_field_attach_form($entity_type, $entity, &$form, &$form_state, $langcode) {
   // Ignore Ajax requests.
@@ -67,7 +67,7 @@ function field_readonly_field_attach_form($entity_type, $entity, &$form, &$form_
     }
 
     if (!empty($attach_css)) {
-      $form['#attached']['css'][] = drupal_get_path('module', 'field_readonly') . '/field_readonly.css';
+      $form['#attached']['css'][] = backdrop_get_path('module', 'field_readonly') . '/field_readonly.css';
     }
   }
 }
